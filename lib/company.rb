@@ -9,13 +9,20 @@ class Company
     @earnings = options[:earnings]
   end
 
-  def report
+  def report(options={})
     result = "shares: #{@shares}\nearnings: #{@earnings}\npe: #{@pe}"
     if block_given?
-      dfc = DFC.new
-      yield(dfc)
-      result += "\nmargin: %.0d%%" % (((earnings * dfc.calc / shares) - 1)*100)
+      yield(dfc = DFC.new)
+      growth = dfc.calc
+
+      result = result + "\nmargin: %.0d%%" % (((earnings * growth / shares) - 1)*100)
+      growth = growth / @pe * options[:pe] if options[:pe]
+
+      if options[:pe]
+        result = result + "\nmargin: %.0d%% (pe #{options[:pe]})" % (((earnings * growth / shares) - 1)*100)
+      end
     end
+
     result
   end
 

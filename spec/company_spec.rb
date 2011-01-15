@@ -26,9 +26,13 @@ describe Company do
       subject.report do |dfc|
         dfc.discount(1.1).period(1.1, 10).period(1.05)
       end.should include("margin: -69%")
-
     end
 
+    it "calculates value diff for changed PE" do
+      subject.report(:pe => 20) do |dfc|
+        dfc.discount(1.07).period(1.15, 10).period(1.05)
+      end.should include("margin: 64%")
+    end
   end
 
 end
